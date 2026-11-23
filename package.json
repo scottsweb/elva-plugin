@@ -1,6 +1,6 @@
 {
   "name": "@elva/plugin",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Shared 11ty configuration and CLI for the elva starter theme.",
   "main": "index.js",
   "type": "module",
