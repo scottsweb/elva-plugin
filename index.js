@@ -52,13 +52,22 @@ export default function elva(settings, options = {}) {
 		const locales = options.locales || {};
 		const collections = options.collections || {};
 
-		const robotsTemplate = fs.readFileSync(join(__dirname, 'elva/templates/robots.njk'), 'utf-8');
-		const sitemapTemplate = fs.readFileSync(join(__dirname, 'elva/templates/sitemap.njk'), 'utf-8');
-		const sitemapIndexTemplate = fs.readFileSync(join(__dirname, 'elva/templates/sitemap-index.njk'), 'utf-8');
-		const manifestTemplate = fs.readFileSync(join(__dirname, 'elva/templates/manifest.njk'), 'utf-8');
-		const blogrollXMLTemplate = fs.readFileSync(join(__dirname, 'elva/templates/blogroll.xml.njk'), 'utf-8');
-		const searchApiTemplate = fs.readFileSync(join(__dirname, 'elva/templates/search.json.njk'), 'utf-8');
-		const feedXslTemplate = fs.readFileSync(join(__dirname, 'elva/templates/feed.xsl.njk'), 'utf-8');
+		const resolveTemplate = (name) => {
+			const projectPath = join(process.cwd(), 'elva', 'templates', name);
+			const pluginPath = join(__dirname, 'elva', 'templates', name);
+			if (fs.existsSync(projectPath)) {
+				return fs.readFileSync(projectPath, 'utf-8');
+			}
+			return fs.readFileSync(pluginPath, 'utf-8');
+		};
+
+		const robotsTemplate = resolveTemplate('robots.njk');
+		const sitemapTemplate = resolveTemplate('sitemap.njk');
+		const sitemapIndexTemplate = resolveTemplate('sitemap-index.njk');
+		const manifestTemplate = resolveTemplate('manifest.njk');
+		const blogrollXMLTemplate = resolveTemplate('blogroll.xml.njk');
+		const searchApiTemplate = resolveTemplate('search.json.njk');
+		const feedXslTemplate = resolveTemplate('feed.xsl.njk');
 
 		eleventyConfig.addTemplate('robots.njk', robotsTemplate);
 
@@ -76,8 +85,8 @@ export default function elva(settings, options = {}) {
 			for (let [collectionName, config] of Object.entries(collections)) {
 				if (!config.feed) continue;
 
-				const feedXmlTemplate = fs.readFileSync(join(__dirname, 'elva/templates/feed.xml.njk'), 'utf-8');
-				const feedJsonTemplate = fs.readFileSync(join(__dirname, 'elva/templates/feed.json.njk'), 'utf-8');
+				const feedXmlTemplate = resolveTemplate('feed.xml.njk');
+				const feedJsonTemplate = resolveTemplate('feed.json.njk');
 
 				const feedSlug = collectionName === 'posts' ? 'feed' : collectionName;
 				eleventyConfig.addTemplate(key + '-' + collectionName + '-feed.xml.njk', feedXmlTemplate, {

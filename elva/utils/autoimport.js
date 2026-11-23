@@ -3,16 +3,31 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export async function autoImport(eleventyConfig, dir, register, { aliases = false } = {}) {
-	const baseDir = path.dirname(__filename);
-	const resolved = path.isAbsolute(dir) ? dir : path.resolve(baseDir, dir);
-	const files = fs.readdirSync(resolved).filter((f) => f.endsWith('.js'));
-	const url = pathToFileURL(resolved).href;
+function resolveFiles(type) {
+	const pluginBase = path.join(__dirname, '..', type);
+	const projectBase = path.join(process.cwd(), 'elva', type);
 
-	for (const file of files) {
+	const projectFiles = fs.existsSync(projectBase)
+		? fs.readdirSync(projectBase).filter((f) => f.endsWith('.js'))
+		: [];
+	const pluginFiles = fs.readdirSync(pluginBase).filter((f) => f.endsWith('.js'));
+
+	const allFiles = [...new Set([...projectFiles, ...pluginFiles])];
+
+	return { allFiles, projectFiles, pluginBase, projectBase };
+}
+
+export async function autoImport(eleventyConfig, type, register, { aliases = false } = {}) {
+	const { allFiles, projectFiles, pluginBase, projectBase } = resolveFiles(type);
+
+	for (const file of allFiles) {
 		const exportName = file.replace('.js', '');
-		const module = await import(`${url}/${file}`);
+		const isProjectOverride = projectFiles.includes(file);
+		const baseDir = isProjectOverride ? projectBase : pluginBase;
+		const url = pathToFileURL(path.join(baseDir, file)).href;
+		const module = await import(url);
 
 		// register main export
 		const fn = module[exportName];
@@ -32,7 +47,7 @@ export async function autoImport(eleventyConfig, dir, register, { aliases = fals
 export async function autoImportFilters(eleventyConfig) {
 	await autoImport(
 		eleventyConfig,
-		'../filters/',
+		'filters',
 		(fn, name) => {
 			eleventyConfig.addFilter(name, fn);
 		},
@@ -43,7 +58,7 @@ export async function autoImportFilters(eleventyConfig) {
 export async function autoImportPlugins(eleventyConfig) {
 	await autoImport(
 		eleventyConfig,
-		'../plugins/',
+		'plugins',
 		(fn) => {
 			eleventyConfig.addPlugin(fn);
 		},
@@ -54,7 +69,7 @@ export async function autoImportPlugins(eleventyConfig) {
 export async function autoImportTransforms(eleventyConfig) {
 	await autoImport(
 		eleventyConfig,
-		'../transforms/',
+		'transforms',
 		(fn, name) => {
 			eleventyConfig.addTransform(name, fn);
 		},
@@ -65,7 +80,7 @@ export async function autoImportTransforms(eleventyConfig) {
 export async function autoImportShortcodes(eleventyConfig) {
 	await autoImport(
 		eleventyConfig,
-		'../shortcodes/',
+		'shortcodes',
 		(fn, name) => {
 			eleventyConfig.addShortcode(name, fn);
 		},
