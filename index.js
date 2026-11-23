@@ -29,7 +29,7 @@ import pluginImageTransformConfig from './elva/config/images.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export default function setup(settings, options = {}) {
+export default function elva(settings, options = {}) {
 	return async function (eleventyConfig) {
 
 		// Watch Targets ----------------------------------
