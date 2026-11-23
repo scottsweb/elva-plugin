@@ -1,3 +1,5 @@
+// Imports --------------------------------------------
+
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import fs from 'node:fs';
@@ -18,9 +20,11 @@ import pluginRSS from '@11ty/eleventy-plugin-rss';
 import pluginSyntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
 import slugify from '@sindresorhus/slugify';
 
+// Local -----------------------------------------------
+
+import { autoImportFilters, autoImportPlugins } from './elva/utils/autoimport.js';
 import pluginEmbedEverythingConfig from './elva/config/embeds.js';
 import pluginImageTransformConfig from './elva/config/images.js';
-import { autoImportFilters, autoImportPlugins } from './elva/utils/autoimport.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -36,13 +40,13 @@ export default function setup(settings, options = {}) {
 
 		// development only open graph template
 		if (process.env.ELEVENTY_RUN_MODE && process.env.ELEVENTY_RUN_MODE !== 'build') {
-			const ogPreviewTemplate = fs.readFileSync(
-				resolve(`themes/${settings.theme}/_layouts/`, 'opengraph-preview.njk'),
-				'utf-8'
-			);
-			eleventyConfig.addTemplate('opengraph-preview.njk', ogPreviewTemplate, {
-				theme: settings.theme
-			});
+			const ogPreviewPath = resolve(`themes/${settings.theme}/_layouts/`, 'opengraph-preview.njk');
+			if (fs.existsSync(ogPreviewPath)) {
+				const ogPreviewTemplate = fs.readFileSync(ogPreviewPath, 'utf-8');
+				eleventyConfig.addTemplate('opengraph-preview.njk', ogPreviewTemplate, {
+					theme: settings.theme
+				});
+			}
 		}
 
 		const locales = options.locales || {};
