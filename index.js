@@ -22,7 +22,7 @@ import slugify from '@sindresorhus/slugify';
 
 // Local -----------------------------------------------
 
-import { autoImportFilters, autoImportPlugins } from './elva/utils/autoimport.js';
+import { autoImportFilters, autoImportPlugins, autoImportTransforms, autoImportShortcodes } from './elva/utils/autoimport.js';
 import pluginEmbedEverythingConfig from './elva/config/embeds.js';
 import pluginImageTransformConfig from './elva/config/images.js';
 
@@ -121,11 +121,11 @@ export default function elva(settings, options = {}) {
 
 		// Transforms -------------------------------------
 
-		// await autoImportTransforms(eleventyConfig);
+		await autoImportTransforms(eleventyConfig);
 
 		// Shortcodes -------------------------------------
 
-		// await autoImportShortcodes(eleventyConfig);
+		await autoImportShortcodes(eleventyConfig);
 		eleventyConfig.addShortcode('version', () => `${+new Date()}`);
 		eleventyConfig.addShortcode('year', () => `${settings.year || new Date().getFullYear()}`);
 		eleventyConfig.addShortcode('build', () => `${new Date().toISOString().split('T')[0]}`);
