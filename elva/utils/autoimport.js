@@ -12,7 +12,9 @@ function resolveFiles(type) {
 	const projectFiles = fs.existsSync(projectBase)
 		? fs.readdirSync(projectBase).filter((f) => f.endsWith('.js'))
 		: [];
-	const pluginFiles = fs.readdirSync(pluginBase).filter((f) => f.endsWith('.js'));
+	const pluginFiles = fs.existsSync(pluginBase)
+		? fs.readdirSync(pluginBase).filter((f) => f.endsWith('.js'))
+		: [];
 
 	const allFiles = [...new Set([...projectFiles, ...pluginFiles])];
 
