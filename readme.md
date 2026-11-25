@@ -111,6 +111,31 @@ Drop files into an `elva/` folder in your child project to override the plugin's
 
 The plugin checks `<project>/elva/` first for filters, plugins, templates, shortcodes, and transforms — falling back to its own versions if no override exists. This lets you customize individual files without forking the entire plugin.
 
+## Feeds
+
+By default elva generates RSS and JSON feeds for any collection with `feed: true` in your collections data file (`content/_data/types.json`). If you register an `_rss` collection in your `.eleventy.js`, you can also create a global feed across all collections:
+
+```js
+const feedCollections = Object.keys(collections)
+  .filter((name) => collections[name].feed)
+  .map((name) => `_${name}`);
+
+eleventyConfig.addCollection('_rss', (collectionApi) =>
+  collectionApi
+    .getAll()
+    .filter((item) =>
+      item.data.tags?.some((tag) => feedCollections.includes(tag))
+    )
+    .sort((a, b) => a.date - b.date)
+);
+```
+
+This will generate:
+
+- `/feed/feed.xml` / `/feed/feed.json` — global feed from `_rss` (all collections combined)
+- `/feed/posts.xml` / `/feed/posts.json` — posts collection
+- `/feed/projects.xml` / `/feed/projects.json` — projects collection
+
 ## CLI
 
 You can use the CLI to manage languages and content directly from the command line. Start with `npx elva`. The CLI defaults to an interactive menu, but you can also use shortcuts for common tasks.

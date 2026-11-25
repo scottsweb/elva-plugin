@@ -51,6 +51,7 @@ export default function elva(settings, options = {}) {
 
 		const locales = options.locales || {};
 		const collections = options.collections || {};
+		const hasGlobalFeed = '_rss' in eleventyConfig.collections;
 
 		const resolveTemplate = (name) => {
 			const projectPath = join(process.cwd(), 'elva', 'templates', name);
@@ -88,7 +89,8 @@ export default function elva(settings, options = {}) {
 				const feedXmlTemplate = resolveTemplate('feed.xml.njk');
 				const feedJsonTemplate = resolveTemplate('feed.json.njk');
 
-				const feedSlug = collectionName === 'posts' ? 'feed' : collectionName;
+				const feedSlug = hasGlobalFeed ? collectionName : (collectionName === 'posts' ? 'feed' : collectionName);
+				
 				eleventyConfig.addTemplate(key + '-' + collectionName + '-feed.xml.njk', feedXmlTemplate, {
 					lang: key,
 					collectionName,
@@ -102,6 +104,23 @@ export default function elva(settings, options = {}) {
 					collectionTag: `_${collectionName}`,
 					label: config.label,
 					feedSlug
+				});
+			}
+
+			if (hasGlobalFeed) {
+				const feedXmlTemplate = resolveTemplate('feed.xml.njk');
+				const feedJsonTemplate = resolveTemplate('feed.json.njk');
+				eleventyConfig.addTemplate(key + 'feed.xml.njk', feedXmlTemplate, {
+					lang: key,
+					collectionName: 'rss',
+					collectionTag: '_rss',
+					feedSlug: 'feed'
+				});
+				eleventyConfig.addTemplate(key + 'feed.json.njk', feedJsonTemplate, {
+					lang: key,
+					collectionName: 'rss',
+					collectionTag: '_rss',
+					feedSlug: 'feed'
 				});
 			}
 		}
