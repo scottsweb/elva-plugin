@@ -74,6 +74,7 @@ All configuration lives in your child project's `content/_data/settings.json` an
   "theme": "default",
   "cdn": false,
   "tocLevels": [2, 3],
+  "templates": ["robots", "sitemap", "manifest", "blogroll", "search", "feed"],
   "images": {
     "widths": [300, 600, 1200, 2400, "auto"],
     "formats": ["avif", "webp", "svg", "auto"]
@@ -93,6 +94,18 @@ All configuration lives in your child project's `content/_data/settings.json` an
   }
 }
 ```
+
+### Templates
+
+Control which virtual templates the plugin generates. The default is to have all enabled (as above), or you can omit `templates` entirely for the same result. To refine your build, opt-in to specific templates:
+
+```json
+{
+  "templates": ["sitemap", "manifest", "feed"]
+}
+```
+
+This disables `robots`, `blogroll`, and the `search` API.
 
 ## Local Overrides
 
