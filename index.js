@@ -1,7 +1,7 @@
 // Imports --------------------------------------------
 
 import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, basename } from 'node:path';
 import fs from 'node:fs';
 import { I18nPlugin, HtmlBasePlugin, RenderPlugin, IdAttributePlugin } from '@11ty/eleventy';
 import { eleventyImageTransformPlugin } from '@11ty/eleventy-img';
@@ -32,8 +32,9 @@ const __dirname = dirname(__filename);
 function findProjectRoot() {
 	let dir = __dirname;
 	while (dir !== dirname(dir)) {
-		if (fs.existsSync(join(dir, '.eleventy.js'))) return dir;
-		dir = dirname(dir);
+		const parent = dirname(dir);
+		if (basename(parent) === 'node_modules') return dirname(parent);
+		dir = parent;
 	}
 	return process.cwd();
 }
