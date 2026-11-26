@@ -1,6 +1,11 @@
 import colors from 'yoctocolors';
 import * as path from 'path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { readFileSync, rmSync, existsSync, readdirSync } from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const LOCALES_PATH = path.join(process.cwd(), 'content', '_data', 'locales.json');
 export const SETTINGS_PATH = path.join(process.cwd(), 'content', '_data', 'settings.json');
@@ -8,7 +13,7 @@ export const BLOGROLL_PATH = path.join(process.cwd(), 'content', '_data', 'blogr
 export const PACKAGE_PATH = path.join(process.cwd(), 'package.json');
 export const THEMES_PATH = path.join(process.cwd(), 'themes');
 export const COLLECTIONS_PATH = path.join(process.cwd(), 'content', '_data', 'types.json');
-export const COLLECTIONS_TEMPLATE_PATH = path.join(process.cwd(), '.cli', 'templates', 'collection.11tydata.js');
+export const COLLECTIONS_TEMPLATE_PATH = path.join(__dirname, 'templates', 'collection.11tydata.js');
 export const TRANSLATIONS_DIR = path.join(process.cwd(), 'content', '_data', 'translations');
 
 export const getTemplatePartChoices = ({ type = 'all' } = {}) => {
