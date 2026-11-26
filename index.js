@@ -48,6 +48,12 @@ export default function elva(settings, options = {}) {
 			});
 		}
 
+		// Ensure year is always in settings
+		eleventyConfig.addGlobalData('settings', {
+			...(eleventyConfig.globalData.settings || {}),
+			year: new Date().getFullYear()
+		});
+
 		// Watch Targets ----------------------------------
 
 		eleventyConfig.setUseGitIgnore(false);
@@ -162,7 +168,7 @@ export default function elva(settings, options = {}) {
 
 		await autoImportShortcodes(eleventyConfig);
 		eleventyConfig.addShortcode('version', () => `${+new Date()}`);
-		eleventyConfig.addShortcode('year', () => `${new Date().getFullYear()}`);
+		eleventyConfig.addShortcode('year', () => `${eleventyConfig.globalData.settings.year}`);
 		eleventyConfig.addShortcode('build', () => `${new Date().toISOString().split('T')[0]}`);
 
 		// Filters ----------------------------------------
