@@ -30,12 +30,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 function findProjectRoot() {
+	// Try process.cwd() first — works in most environments
+	if (fs.existsSync(join(process.cwd(), '.eleventy.js'))) return process.cwd();
+	
+	// Fall back: walk up from the plugin's location to find node_modules
 	let dir = __dirname;
 	while (dir !== dirname(dir)) {
 		const parent = dirname(dir);
 		if (basename(parent) === 'node_modules') return dirname(parent);
 		dir = parent;
 	}
+	
 	return process.cwd();
 }
 
