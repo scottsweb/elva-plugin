@@ -15,6 +15,9 @@
     "format:fix": "prettier . --write"
   },
   "license": "MIT",
+  "allowScripts": {
+    "sharp": true
+  },
   "author": {
     "name": "Scott Evans",
     "url": "https://scott.ee",
