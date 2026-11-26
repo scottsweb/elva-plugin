@@ -124,6 +124,8 @@ eleventyConfig.addWatchTarget('./elva/templates/*', { resetConfig: true });
 By default elva generates RSS and JSON feeds for any collection with `feed: true` in your collections data file (`content/_data/types.json`). If you register an `_rss` collection in your `.eleventy.js`, you can also create a global feed across all collections:
 
 ```js
+import collections from './content/_data/types.json' with { type: 'json' };
+
 const feedCollections = Object.keys(collections)
   .filter((name) => collections[name].feed)
   .map((name) => `_${name}`);
@@ -140,7 +142,7 @@ eleventyConfig.addCollection('_rss', (collectionApi) =>
 
 This will generate:
 
-- `/feed/feed.xml` / `/feed/feed.json` — global feed from `_rss` (all collections combined)
+- `/feed/feed.xml` / `/feed/feed.json` — global feed from `_rss` (all collections combined, or a set of collections you choose)
 - `/feed/posts.xml` / `/feed/posts.json` — posts collection
 - `/feed/projects.xml` / `/feed/projects.json` — projects collection
 
