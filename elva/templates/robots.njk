@@ -10,8 +10,9 @@ Sitemap: {{ "/sitemap.xml" | htmlBaseUrl(settings.url) }}
 {%- else -%}
 Sitemap: {{ "/sitemap-index.xml" | htmlBaseUrl(settings.url) }}
 {%- endif %}
-
+{%- if settings.norobots -%}
 {{ badbots }}
+{% endif %}
 User-agent: *
 Disallow:
 Disallow: /404.html

@@ -89,9 +89,10 @@ Your `content/_data/settings.json` contains all static configuration:
 {
   "theme": "default",
   "cdn": false,
-  "tocLevels": [2, 3],
+  "toc": [2, 3],
   "templates": ["robots", "sitemap", "manifest", "blogroll", "search", "feed"],
   "plugins": ["rss", "render", "anchors", "syntaxhighlight", "embeds"],
+  "norobots": true,
   "images": {
     "widths": [300, 600, 1200, 2400, "auto"],
     "formats": ["avif", "webp", "svg", "auto"]
@@ -112,7 +113,7 @@ Your `content/_data/settings.json` contains all static configuration:
 }
 ```
 
-### Templates
+### `templates`
 
 Control which virtual templates the plugin generates. The default is to have all enabled (as above), or you can omit `templates` entirely for the same result. To refine your build, opt-in to specific templates:
 
@@ -124,7 +125,7 @@ Control which virtual templates the plugin generates. The default is to have all
 
 This disables `robots`, `blogroll`, and the `search` API.
 
-### Plugins
+### `plugins`
 
 Control which optional plugins are loaded. The default is for all optional plugins to be enabled (as above), or you can omit `plugins` entirely for the same result. To refine your build, opt-in to specific plugins:
 
@@ -135,6 +136,28 @@ Control which optional plugins are loaded. The default is for all optional plugi
 ```
 
 This disables `embeds`. Four plugins are always enabled: `htmlbase`, `i18n`, `images`, and `navigation`.
+
+### `norobots`
+
+Control whether the [`ai-robots-txt` blocklist](https://github.com/ai-robots-txt/ai.robots.txt) is output to your production `robots.txt`. Default is `true` (include blocklist). Set to `false` to omit it:
+
+```json
+{
+  "norobots": false
+}
+```
+
+This only affects production builds. Non-production builds always discourage crawling.
+
+### `toc`
+
+Control which heading levels appear in the table of contents shortcode `[toc]`. Default is `[2, 3]`:
+
+```json
+{
+  "toc": [2, 3, 4]
+}
+```
 
 ## Local Overrides
 

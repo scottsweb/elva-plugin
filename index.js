@@ -215,7 +215,7 @@ export default function elva() {
 			mdLib.use(markdownItImageFigures, { figcaption: true });
 			mdLib.use(markdownItToc, {
 				slugify,
-				includeLevel: settings.tocLevels || [2, 3]
+				includeLevel: settings.toc || [2, 3]
 			});
 		});
 
