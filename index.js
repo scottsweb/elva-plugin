@@ -29,7 +29,7 @@ import pluginImageTransformConfig from './elva/config/images.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function loadLocalData(filename) {
+async function loadDataFile(filename) {
 	const filepath = join(process.cwd(), 'content', '_data', filename);
 	if (!fs.existsSync(filepath)) return {};
 	return JSON.parse(fs.readFileSync(filepath, 'utf-8'));
@@ -77,8 +77,8 @@ export default function elva(settings) {
 			}
 		}
 
-		const locales = await loadLocalData('locales.json');
-		const collections = await loadLocalData('types.json');
+		const locales = await loadDataFile('locales.json');
+		const collections = await loadDataFile('types.json');
 		const defaultLanguage = Object.keys(locales).find((key) => locales[key].default);
 		const hasGlobalFeed = '_rss' in eleventyConfig.collections;
 
