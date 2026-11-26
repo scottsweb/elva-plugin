@@ -29,11 +29,17 @@ import pluginImageTransformConfig from './elva/config/images.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export default function elva(settings, options = {}) {
+async function loadLocalData(filename) {
+	const filepath = join(process.cwd(), 'content', '_data', filename);
+	if (!fs.existsSync(filepath)) return {};
+	return JSON.parse(fs.readFileSync(filepath, 'utf-8'));
+}
+
+export default function elva(settings) {
 	return async function (eleventyConfig) {
 
 		// Global Settings --------------------------------
-		// Ensure required globalData.settings exist (catches removal from theme)
+		// ensure required globalData.settings exist (catches removal from theme)
 
 		if (!eleventyConfig.globalData.settings) {
 			eleventyConfig.addGlobalData('settings', {
@@ -71,8 +77,9 @@ export default function elva(settings, options = {}) {
 			}
 		}
 
-		const locales = options.locales || {};
-		const collections = options.collections || {};
+		const locales = await loadLocalData('locales.json');
+		const collections = await loadLocalData('types.json');
+		const defaultLanguage = Object.keys(locales).find((key) => locales[key].default);
 		const hasGlobalFeed = '_rss' in eleventyConfig.collections;
 
 		const resolveTemplate = (name) => {
@@ -150,7 +157,7 @@ export default function elva(settings, options = {}) {
 		await eleventyConfig.addPlugin(pluginRSS);
 		eleventyConfig.addPlugin(HtmlBasePlugin);
 		eleventyConfig.addPlugin(RenderPlugin);
-		eleventyConfig.addPlugin(I18nPlugin, { defaultLanguage: options.defaultLanguage, errorMode: 'never' });
+		eleventyConfig.addPlugin(I18nPlugin, { defaultLanguage, errorMode: 'never' });
 		eleventyConfig.addPlugin(IdAttributePlugin);
 		eleventyConfig.addPlugin(pluginSyntaxHighlight);
 		eleventyConfig.addPlugin(pluginEmbedEverything, pluginEmbedEverythingConfig(settings));
