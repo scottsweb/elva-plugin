@@ -10,7 +10,7 @@ Sitemap: {{ "/sitemap.xml" | htmlBaseUrl(settings.url) }}
 {%- else -%}
 Sitemap: {{ "/sitemap-index.xml" | htmlBaseUrl(settings.url) }}
 {%- endif %}
-{% if settings.norobots %}
+{% if settings.norobots !== false %}
 {{ badbots }}
 {% endif -%}
 User-agent: *
