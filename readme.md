@@ -109,7 +109,15 @@ Drop files into an `elva/` folder in your child project to override the plugin's
 └── themes/
 ```
 
-The plugin checks `<project>/elva/` first for filters, plugins, templates, shortcodes, and transforms — falling back to its own versions if no override exists. This lets you customize individual files without forking the entire plugin.
+The plugin checks `<project>/elva/` first for filters, plugins, templates, shortcodes, and transforms — falling back to its own versions if no override exists. This lets you customize individual files without forking the entire plugin. You can also define new filters, plugins, templates, shortcodes and transforms in the same folders and they will be auto-loaded for you.
+
+### Watching virtual templates
+
+11ty doesn't watch virtual templates (templates registered via `addTemplate`). If you override plugin templates in your `elva/templates/` folder and want hot-reload, add:
+
+```js
+eleventyConfig.addWatchTarget('./elva/templates/*', { resetConfig: true });
+```
 
 ## Feeds
 
