@@ -32,6 +32,22 @@ const __dirname = dirname(__filename);
 export default function elva(settings, options = {}) {
 	return async function (eleventyConfig) {
 
+		// Global Settings --------------------------------
+		// Ensure required globalData.settings exist (catches removal from theme)
+
+		if (!eleventyConfig.globalData.settings) {
+			eleventyConfig.addGlobalData('settings', {
+				url: process.env.URL || process.env.CF_PAGES_URL || 'http://localhost:8080',
+				isProduction: process.env.NODE_ENV === 'production',
+				isStaging:
+					(process.env.URL && process.env.URL.includes('github.io')) ||
+					(process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') ||
+					process.env.NODE_ENV === 'staging' ||
+					false,
+				theme: process.env.ELVA_THEME || settings.theme
+			});
+		}
+
 		// Watch Targets ----------------------------------
 
 		eleventyConfig.setUseGitIgnore(false);
@@ -146,7 +162,7 @@ export default function elva(settings, options = {}) {
 
 		await autoImportShortcodes(eleventyConfig);
 		eleventyConfig.addShortcode('version', () => `${+new Date()}`);
-		eleventyConfig.addShortcode('year', () => `${settings.year || new Date().getFullYear()}`);
+		eleventyConfig.addShortcode('year', () => `${new Date().getFullYear()}`);
 		eleventyConfig.addShortcode('build', () => `${new Date().toISOString().split('T')[0]}`);
 
 		// Filters ----------------------------------------
