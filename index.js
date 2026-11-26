@@ -35,28 +35,20 @@ async function loadDataFile(filename) {
 	return JSON.parse(fs.readFileSync(filepath, 'utf-8'));
 }
 
-export default function elva(settings) {
+export default function elva() {
 	return async function (eleventyConfig) {
 
 		// Global Settings --------------------------------
-		// ensure required globalData.settings exist (catches removal from theme)
 
-		if (!eleventyConfig.globalData.settings) {
-			eleventyConfig.addGlobalData('settings', {
-				url: process.env.URL || process.env.CF_PAGES_URL || 'http://localhost:8080',
-				isProduction: process.env.NODE_ENV === 'production',
-				isStaging:
-					(process.env.URL && process.env.URL.includes('github.io')) ||
-					(process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') ||
-					process.env.NODE_ENV === 'staging' ||
-					false,
-				theme: process.env.ELVA_THEME || settings.theme
-			});
+		const settings = eleventyConfig.globalData?.settings;
+		
+		if (!settings) {
+			throw new Error('globalData.settings not found. Add eleventyConfig.addGlobalData("settings", {...}) to your .eleventy.js');
 		}
 
-		// Ensure year is always in settings
+		// ensure year is always in settings
 		eleventyConfig.addGlobalData('settings', {
-			...(eleventyConfig.globalData.settings || {}),
+			...(settings || {}),
 			year: new Date().getFullYear()
 		});
 
