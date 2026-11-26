@@ -80,7 +80,13 @@ export default function elva(settings) {
 		const locales = await loadDataFile('locales.json');
 		const collections = await loadDataFile('types.json');
 		const defaultLanguage = Object.keys(locales).find((key) => locales[key].default);
+		const enabledTemplates = settings.templates || ['robots', 'sitemap', 'manifest', 'blogroll', 'search', 'feed'];
+		const enabledPlugins = settings.plugins || ['rss', 'render', 'anchors', 'syntaxhighlight', 'embeds'];
+
 		const hasGlobalFeed = '_rss' in eleventyConfig.collections;
+
+		const isTemplateEnabled = (name) => enabledTemplates.includes(name);
+		const isPluginEnabled = (name) => enabledPlugins.includes(name);
 
 		const resolveTemplate = (name) => {
 			const projectPath = join(process.cwd(), 'elva', 'templates', name);
@@ -101,68 +107,85 @@ export default function elva(settings) {
 		const feedXmlTemplate = resolveTemplate('feed.xml.njk');
 		const feedJsonTemplate = resolveTemplate('feed.json.njk');
 
-		eleventyConfig.addTemplate('robots.njk', robotsTemplate);
+		if (isTemplateEnabled('robots')) {
+			eleventyConfig.addTemplate('robots.njk', robotsTemplate);
+		}
 
-		if (Object.keys(locales).length > 1) {
+		if (isTemplateEnabled('sitemap') && Object.keys(locales).length > 1) {
 			eleventyConfig.addTemplate('sitemap-index.njk', sitemapIndexTemplate);
 		}
 
 		for (let [key] of Object.entries(locales)) {
-			eleventyConfig.addTemplate(key + '-sitemap.njk', sitemapTemplate, { lang: key });
-			eleventyConfig.addTemplate(key + '-manifest.njk', manifestTemplate, { lang: key });
-			eleventyConfig.addTemplate(key + '-blogroll.xml.njk', blogrollXMLTemplate, { lang: key });
-			eleventyConfig.addTemplate(key + '-search-api.json.njk', searchApiTemplate, { lang: key, collection: '_search' });
-			eleventyConfig.addTemplate(key + '-feed.xsl.njk', feedXslTemplate, { lang: key });
-
-			for (let [collectionName, config] of Object.entries(collections)) {
-				if (!config.feed) continue;
-
-				const feedSlug = hasGlobalFeed ? collectionName : (collectionName === 'posts' ? 'feed' : collectionName);
-				
-				eleventyConfig.addTemplate(key + '-' + collectionName + '-feed.xml.njk', feedXmlTemplate, {
-					lang: key,
-					collectionName,
-					collectionTag: `_${collectionName}`,
-					label: config.label,
-					feedSlug
-				});
-				eleventyConfig.addTemplate(key + '-' + collectionName + '-feed.json.njk', feedJsonTemplate, {
-					lang: key,
-					collectionName,
-					collectionTag: `_${collectionName}`,
-					label: config.label,
-					feedSlug
-				});
+			if (isTemplateEnabled('sitemap')) {
+				eleventyConfig.addTemplate(key + '-sitemap.njk', sitemapTemplate, { lang: key });
+			}
+			if (isTemplateEnabled('manifest')) {
+				eleventyConfig.addTemplate(key + '-manifest.njk', manifestTemplate, { lang: key });
+			}
+			if (isTemplateEnabled('blogroll')) {
+				eleventyConfig.addTemplate(key + '-blogroll.xml.njk', blogrollXMLTemplate, { lang: key });
+			}
+			if (isTemplateEnabled('search')) {
+				eleventyConfig.addTemplate(key + '-search-api.json.njk', searchApiTemplate, { lang: key, collection: '_search' });
+			}
+			if (isTemplateEnabled('feed')) {
+				eleventyConfig.addTemplate(key + '-feed.xsl.njk', feedXslTemplate, { lang: key });
 			}
 
-			if (hasGlobalFeed) {
-				eleventyConfig.addTemplate(key + 'feed.xml.njk', feedXmlTemplate, {
-					lang: key,
-					collectionName: 'rss',
-					collectionTag: '_rss',
-					feedSlug: 'feed'
-				});
-				eleventyConfig.addTemplate(key + 'feed.json.njk', feedJsonTemplate, {
-					lang: key,
-					collectionName: 'rss',
-					collectionTag: '_rss',
-					feedSlug: 'feed'
-				});
+			if (isTemplateEnabled('feed')) {
+				for (let [collectionName, config] of Object.entries(collections)) {
+					if (!config.feed) continue;
+
+					const feedSlug = hasGlobalFeed ? collectionName : (collectionName === 'posts' ? 'feed' : collectionName);
+					
+					eleventyConfig.addTemplate(key + '-' + collectionName + '-feed.xml.njk', feedXmlTemplate, {
+						lang: key,
+						collectionName,
+						collectionTag: `_${collectionName}`,
+						label: config.label,
+						feedSlug
+					});
+					eleventyConfig.addTemplate(key + '-' + collectionName + '-feed.json.njk', feedJsonTemplate, {
+						lang: key,
+						collectionName,
+						collectionTag: `_${collectionName}`,
+						label: config.label,
+						feedSlug
+					});
+				}
+
+				if (hasGlobalFeed) {
+					eleventyConfig.addTemplate(key + 'feed.xml.njk', feedXmlTemplate, {
+						lang: key,
+						collectionName: 'rss',
+						collectionTag: '_rss',
+						feedSlug: 'feed'
+					});
+					eleventyConfig.addTemplate(key + 'feed.json.njk', feedJsonTemplate, {
+						lang: key,
+						collectionName: 'rss',
+						collectionTag: '_rss',
+						feedSlug: 'feed'
+					});
+				}
 			}
 		}
 
 		// Plugins ----------------------------------------
 
-		await autoImportPlugins(eleventyConfig);
-		await eleventyConfig.addPlugin(pluginRSS);
+		// core plugins
 		eleventyConfig.addPlugin(HtmlBasePlugin);
-		eleventyConfig.addPlugin(RenderPlugin);
 		eleventyConfig.addPlugin(I18nPlugin, { defaultLanguage, errorMode: 'never' });
-		eleventyConfig.addPlugin(IdAttributePlugin);
-		eleventyConfig.addPlugin(pluginSyntaxHighlight);
-		eleventyConfig.addPlugin(pluginEmbedEverything, pluginEmbedEverythingConfig(settings));
 		eleventyConfig.addPlugin(eleventyImageTransformPlugin, pluginImageTransformConfig(eleventyConfig, settings));
 		eleventyConfig.addPlugin(eleventyNavigationPlugin);
+
+		// optional plugins (configurable via settings.plugins)
+		await autoImportPlugins(eleventyConfig);
+		if (isPluginEnabled('rss')) await eleventyConfig.addPlugin(pluginRSS);
+		if (isPluginEnabled('render')) eleventyConfig.addPlugin(RenderPlugin);
+		if (isPluginEnabled('anchors')) eleventyConfig.addPlugin(IdAttributePlugin);
+		if (isPluginEnabled('syntaxhighlight')) eleventyConfig.addPlugin(pluginSyntaxHighlight);
+		if (isPluginEnabled('embeds')) eleventyConfig.addPlugin(pluginEmbedEverything, pluginEmbedEverythingConfig(settings));
 
 		// Transforms -------------------------------------
 

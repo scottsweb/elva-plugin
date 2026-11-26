@@ -75,6 +75,7 @@ All configuration lives in your child project's `content/_data/settings.json` an
   "cdn": false,
   "tocLevels": [2, 3],
   "templates": ["robots", "sitemap", "manifest", "blogroll", "search", "feed"],
+  "plugins": ["rss", "render", "anchors", "syntaxhighlight", "embeds"],
   "images": {
     "widths": [300, 600, 1200, 2400, "auto"],
     "formats": ["avif", "webp", "svg", "auto"]
@@ -106,6 +107,18 @@ Control which virtual templates the plugin generates. The default is to have all
 ```
 
 This disables `robots`, `blogroll`, and the `search` API.
+
+### Plugins
+
+Control which optional plugins are loaded. The default is for all optional plugins to be enabled (as above), or you can omit `plugins` entirely for the same result. To refine your build, opt-in to specific plugins:
+
+```json
+{
+  "plugins": ["rss", "render", "anchors", "syntaxhighlight"]
+}
+```
+
+This disables `embeds`. Four plugins are always enabled: `htmlbase`, `i18n`, `images`, and `navigation`.
 
 ## Local Overrides
 
