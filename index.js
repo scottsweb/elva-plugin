@@ -55,6 +55,7 @@ export default function elva() {
 		// Watch Targets ----------------------------------
 
 		eleventyConfig.setUseGitIgnore(false);
+		eleventyConfig.addWatchTarget(`./themes/${settings.theme}/_layouts/opengraph-preview.njk`, { resetConfig: true });
 
 		// Virtual Templates ------------------------------
 
