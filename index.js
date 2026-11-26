@@ -29,8 +29,19 @@ import pluginImageTransformConfig from './elva/config/images.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+function findProjectRoot() {
+	let dir = __dirname;
+	while (dir !== dirname(dir)) {
+		if (fs.existsSync(join(dir, '.eleventy.js'))) return dir;
+		dir = dirname(dir);
+	}
+	return process.cwd();
+}
+
+const projectRoot = findProjectRoot();
+
 async function loadDataFile(filename) {
-	const filepath = join(process.cwd(), 'content', '_data', filename);
+	const filepath = join(projectRoot, 'content', '_data', filename);
 	if (!fs.existsSync(filepath)) return {};
 	return JSON.parse(fs.readFileSync(filepath, 'utf-8'));
 }
@@ -71,8 +82,14 @@ export default function elva() {
 		}
 
 		const locales = await loadDataFile('locales.json');
+		if (Object.keys(locales).length === 0) {
+			throw new Error('[elva] content/_data/locales.json not found or empty. Add a locales.json file with at least one locale.');
+		}
 		const collections = await loadDataFile('types.json');
 		const defaultLanguage = Object.keys(locales).find((key) => locales[key].default);
+		if (!defaultLanguage) {
+			throw new Error('[elva] No default locale found in content/_data/locales.json. Set "default": true on one locale.');
+		}
 		const enabledTemplates = settings.templates || ['robots', 'sitemap', 'manifest', 'blogroll', 'search', 'feed'];
 		const enabledPlugins = settings.plugins || ['rss', 'render', 'anchors', 'syntaxhighlight', 'embeds'];
 
