@@ -29,7 +29,16 @@ export async function autoImport(eleventyConfig, type, register, { aliases = fal
 		const isProjectOverride = projectFiles.includes(file);
 		const baseDir = isProjectOverride ? projectBase : pluginBase;
 		const url = pathToFileURL(path.join(baseDir, file)).href;
-		const module = await import(url);
+
+		let module;
+		try {
+			module = await import(url);
+		} catch (err) {
+			eleventyConfig.logger.warn(
+				`Failed to load ${type}/${file}: ${err.message}`
+			);
+			continue;
+		}
 
 		// register main export
 		const fn = module[exportName];
