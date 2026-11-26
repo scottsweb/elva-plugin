@@ -257,8 +257,3 @@ You can use the CLI to manage languages and content directly from the command li
 - `npx elva translations add` - Add a new translation
 - `npx elva translations remove` - Remove a translation
 - `npx elva translations sync` - Sync missing keys from the default language to other locales
-
-## To-do
-
-- [ ] Handle global rss feeds vs individual collections - should be able to support a shared feed across all content types
-- [ ] Ability to turn off badbots in robots? (might be covered by drop-in)
