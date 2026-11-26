@@ -91,6 +91,8 @@ export default function elva(settings, options = {}) {
 		const blogrollXMLTemplate = resolveTemplate('blogroll.xml.njk');
 		const searchApiTemplate = resolveTemplate('search.json.njk');
 		const feedXslTemplate = resolveTemplate('feed.xsl.njk');
+		const feedXmlTemplate = resolveTemplate('feed.xml.njk');
+		const feedJsonTemplate = resolveTemplate('feed.json.njk');
 
 		eleventyConfig.addTemplate('robots.njk', robotsTemplate);
 
@@ -107,9 +109,6 @@ export default function elva(settings, options = {}) {
 
 			for (let [collectionName, config] of Object.entries(collections)) {
 				if (!config.feed) continue;
-
-				const feedXmlTemplate = resolveTemplate('feed.xml.njk');
-				const feedJsonTemplate = resolveTemplate('feed.json.njk');
 
 				const feedSlug = hasGlobalFeed ? collectionName : (collectionName === 'posts' ? 'feed' : collectionName);
 				
@@ -130,8 +129,6 @@ export default function elva(settings, options = {}) {
 			}
 
 			if (hasGlobalFeed) {
-				const feedXmlTemplate = resolveTemplate('feed.xml.njk');
-				const feedJsonTemplate = resolveTemplate('feed.json.njk');
 				eleventyConfig.addTemplate(key + 'feed.xml.njk', feedXmlTemplate, {
 					lang: key,
 					collectionName: 'rss',
