@@ -52,7 +52,7 @@ export default async function (eleventyConfig) {
     theme: process.env.ELVA_THEME || settings.theme
   });
 
-  await eleventyConfig.addPlugin(elva());
+  await eleventyConfig.addPlugin(elva);
 
   // theme-specific stuff...
 
