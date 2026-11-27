@@ -257,3 +257,7 @@ You can use the CLI to manage languages and content directly from the command li
 - `npx elva translations add` - Add a new translation
 - `npx elva translations remove` - Remove a translation
 - `npx elva translations sync` - Sync missing keys from the default language to other locales
+
+## To-do
+
+- **Custom `dir` support** — Allow projects to override Eleventy's `dir` config (`input`, `data`, etc.) and have the plugin and CLI respect those paths. Currently the plugin and CLI assume `content/_data/` for data files and `elva/` at project root. Needs a clean approach for both the plugin (via `addPlugin` options) and the CLI (which can't access `eleventyConfig`).
