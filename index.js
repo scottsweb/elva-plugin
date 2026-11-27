@@ -45,13 +45,18 @@ export default async function elva(eleventyConfig) {
 		throw new Error('content/_data/settings.json not found or empty. Add a settings.json file.');
 	}
 
-	// merge file settings with project-provided env values, allow theme to be overwritten by environment variable
 	const projectSettings = eleventyConfig.globalData?.settings || {};
+
+	if (!projectSettings) {
+		throw new Error('globalData.settings not found. Add eleventyConfig.addGlobalData("settings", {...}) to your .eleventy.js');
+	}
+
+	// merge file settings with project-provided env values, allow theme to be overwritten by environment variable
 	eleventyConfig.addGlobalData('settings', {
 		...settings,
 		...projectSettings,
 		year: new Date().getFullYear(),
-		theme: process.env.ELVA_THEME || projectSettings.theme || settings.theme || 'default'
+		theme: process.env.ELVA_THEME || settings.theme || 'default'
 	});
 
 	// Watch Targets ----------------------------------
