@@ -1,4 +1,4 @@
-import { input, rawlist, confirm } from '@inquirer/prompts';
+import { input, rawlist, checkbox, confirm } from '@inquirer/prompts';
 import { readFileSync, writeFileSync, readdirSync, existsSync, unlinkSync, cpSync } from 'fs';
 import { success, error, warning, PACKAGE_PATH, SETTINGS_PATH, THEMES_PATH, getLocaleData } from './utils.js';
 import { getProperty } from 'dot-prop';
@@ -122,6 +122,84 @@ const setupSite = async () => {
 		default: getProperty(packageJson, 'location')
 	});
 
+	const tocChoices = [
+		{ name: 'H1', value: 1 },
+		{ name: 'H2', value: 2, checked: true },
+		{ name: 'H3', value: 3, checked: true },
+		{ name: 'H4', value: 4 },
+		{ name: 'H5', value: 5 },
+		{ name: 'H6', value: 6 }
+	];
+
+	const toc = await checkbox({
+		message: 'Table of Contents levels:',
+		choices: tocChoices
+	});
+
+	const templateChoices = [
+		{ name: 'robots.txt', value: 'robots', checked: true },
+		{ name: 'Sitemaps', value: 'sitemap', checked: true },
+		{ name: 'Web Manifest', value: 'manifest', checked: true },
+		{ name: 'Blogroll', value: 'blogroll', checked: true },
+		{ name: 'Search API', value: 'search', checked: true },
+		{ name: 'RSS/JSON Feeds', value: 'feed', checked: true }
+	];
+
+	const templates = await checkbox({
+		message: 'Virtual templates to support:',
+		choices: templateChoices
+	});
+
+	const pluginChoices = [
+		{ name: 'RSS Feed', value: 'rss', checked: true },
+		{ name: 'Render', value: 'render', checked: true },
+		{ name: 'ID Attributes', value: 'anchors', checked: true },
+		{ name: 'Syntax Highlight', value: 'syntaxhighlight', checked: true },
+		{ name: 'Embeds', value: 'embeds', checked: true }
+	];
+
+	const plugins = await checkbox({
+		message: 'Plugins to load:',
+		choices: pluginChoices
+	});
+
+	const imageFormatChoices = [
+		{ name: 'AVIF', value: 'avif', checked: true },
+		{ name: 'JPEG', value: 'jpeg' },
+		{ name: 'PNG', value: 'png' },
+		{ name: 'WebP', value: 'webp', checked: true },
+		{ name: 'SVG', value: 'svg', checked: true },
+		{ name: 'GIF', value: 'gif' },
+		{ name: 'Auto', value: 'auto', checked: true },
+	];
+
+	const images = await checkbox({
+		message: 'Image output formats:',
+		choices: imageFormatChoices
+	});
+
+	const embedChoices = [
+		{ name: 'Twitter / X', value: 'twitter', checked: true },
+		{ name: 'YouTube', value: 'youtube', checked: true },
+		{ name: 'Vimeo', value: 'vimeo', checked: true },
+		{ name: 'Instagram', value: 'instagram', checked: true },
+		{ name: 'TikTok', value: 'tiktok', checked: true },
+		{ name: 'OpenStreetMap', value: 'openstreetmap', checked: true },
+		{ name: 'TED', value: 'ted', checked: true },
+		{ name: 'SoundCloud', value: 'soundcloud', checked: true },
+		{ name: 'Spotify', value: 'spotify', checked: true }
+	];
+
+	const embeds = await checkbox({
+		message: 'Support embeds from:',
+		choices: embedChoices
+	});
+
+	const norobots = await confirm({
+		message: 'Discourage AI bots in production robots.txt?',
+		default: true
+	});
+
 	updatePackageJson({
 		name: newPackageJson.name,
 		description: newPackageJson.description,
@@ -140,7 +218,13 @@ const setupSite = async () => {
 			url: newPackageJson.authorUrl,
 			email: newPackageJson.authorEmail,
 			location: newPackageJson.authorLocation
-		}
+		},
+		toc,
+		templates,
+		plugins,
+		norobots,
+		images: { formats: images },
+		embeds: { use: embeds }
 	});
 
 	success('Site setup saved.');
