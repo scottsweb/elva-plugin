@@ -37,7 +37,7 @@ async function loadDataFile(filename) {
 
 export default async function elva(eleventyConfig) {
 
-	// Global Settings --------------------------------
+	// Computed Settings ------------------------------
 
 	const settings = eleventyConfig.globalData?.settings;
 
@@ -45,10 +45,11 @@ export default async function elva(eleventyConfig) {
 		throw new Error('globalData.settings not found. Add eleventyConfig.addGlobalData("settings", {...}) to your .eleventy.js');
 	}
 
-	// ensure year is always in settings
+	// ensure year is always in settings, allow theme to be overwritten by environment variable
 	eleventyConfig.addGlobalData('settings', {
 		...(settings || {}),
-		year: new Date().getFullYear()
+		year: new Date().getFullYear(),
+		theme: process.env.ELVA_THEME || settings.theme
 	});
 
 	// Watch Targets ----------------------------------
