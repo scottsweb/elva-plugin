@@ -49,7 +49,7 @@ export default async function elva(eleventyConfig) {
 	eleventyConfig.addGlobalData('settings', {
 		...(settings || {}),
 		year: new Date().getFullYear(),
-		theme: process.env.ELVA_THEME || settings.theme
+		theme: process.env.ELVA_THEME || settings.theme || 'default'
 	});
 
 	// Watch Targets ----------------------------------
